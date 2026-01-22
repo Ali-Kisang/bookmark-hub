@@ -22,7 +22,6 @@ jobs:
           echo "Ì≥Å Here's what you changed:"
           echo "Commit: ${{ github.sha }}"
           echo "Author: ${{ github.actor }}"
-          echo "Time: ${{ github.event.head_commit.timestamp }}"
           echo ""
           echo "Ì¥ç Looking for frontend files..."
           find . -name "*.jsx" -o -name "*.js" -o -name "*.tsx" -o -name "*.ts" | head -10
