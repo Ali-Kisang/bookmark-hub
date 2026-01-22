@@ -16,7 +16,7 @@ function App() {
             <div className="flex justify-between h-16">
               <div className="flex items-center">
                 <Bookmark className="h-8 w-8 text-primary-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">BookmarkHub</span>
+                <span className="ml-2 text-xl font-bold text-gray-900">BookmarkHub version2🚀🚀!</span>
               </div>
               <div className="flex items-center space-x-4">
                 <Link to="/" className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600">
@@ -31,6 +31,7 @@ function App() {
                   <Tag className="h-5 w-5 mr-1" />
                   Tags
                 </Link>
+                
               </div>
             </div>
           </div>
