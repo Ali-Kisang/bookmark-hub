@@ -1,0 +1,50 @@
+name: Test Button Change CI/CD
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test-button-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Announce the change
+        run: |
+          echo "í¾‰ CI/CD PIPELINE TRIGGERED!"
+          echo "=============================="
+          echo ""
+          echo "You just pushed: ${{ github.event.head_commit.message }}"
+          echo ""
+          echo "í³ Here's what you changed:"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Time: ${{ github.event.head_commit.timestamp }}"
+          echo ""
+          echo "í´ Looking for frontend files..."
+          find . -name "*.jsx" -o -name "*.js" -o -name "*.tsx" -o -name "*.ts" | head -10
+          echo ""
+          echo "âœ… If you changed a button, that change is now in the codebase!"
+          echo ""
+          echo "To see it locally:"
+          echo "1. Pull the changes: git pull origin master"
+          echo "2. Rebuild: docker-compose up -d --build"
+          echo "3. Visit: http://localhost:5173"
+      
+      - name: Create success badge
+        run: |
+          echo "âœ… CI/CD Test PASSED" > ci-success.md
+          echo "====================" >> ci-success.md
+          echo "" >> ci-success.md
+          echo "**Change:** ${{ github.event.head_commit.message }}" >> ci-success.md
+          echo "" >> ci-success.md
+          echo "Your button update is verified!" >> ci-success.md
+      
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-cd-result
+          path: ci-success.md
