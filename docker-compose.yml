@@ -1,0 +1,81 @@
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: bookmarkhub_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-Kisang}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Kisang%401996}
+      POSTGRES_DB: ${DB_NAME:-bookmarkhub}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - bookmarkhub_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-Kisang}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build: ./backend
+    container_name: bookmarkhub_backend
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-Kisang}:${DB_PASSWORD:-Kisang@1996}@postgres:5432/${DB_NAME:-bookmarkhub}
+      SECRET_KEY: ${SECRET_KEY:-siuw8wijiwsjijiodkpdoopowuqwiu8}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://frontend:4173}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bookmarkhub_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    container_name: bookmarkhub_frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    ports:
+      - "5173:5173"
+      - "4173:4173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - bookmarkhub_network
+    depends_on:
+      - backend
+
+  # Nginx (Optional - for production)
+  nginx:
+    image: nginx:alpine
+    container_name: bookmarkhub_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - bookmarkhub_network
+
+networks:
+  bookmarkhub_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
