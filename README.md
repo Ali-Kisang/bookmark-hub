@@ -42,7 +42,7 @@ bookmarkhub/
 ### 1. Clone and Setup
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone <https://github.com/Ali-Kisang/bookmark-hub.git>
 cd bookmarkhub
 
 # Copy environment file
